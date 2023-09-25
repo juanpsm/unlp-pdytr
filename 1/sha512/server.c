@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
      //    printf("\n");
      
      // Agregado: IMPRIME CANTIDAD DE BYTES RECIBIDOS
-     // printf("Bytes recived: %d\n", buffer_read);
+     printf("%d\t", buffer_read);
 	 
 	//RESPONDE AL CLIENTE
      n = write(newsockfd,"I got your message",18);
