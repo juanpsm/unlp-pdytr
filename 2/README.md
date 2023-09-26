@@ -7,7 +7,7 @@ host$ vagrant up
 ```
 
 Se crean las maquinas `vm1` y `vm2` en una red privada usando las ips
-`192.168.56.101` y `192.168.56.102` respectivamente.
+relacionadas al default interface, `192.168.*.101` y `192.168.*.102` respectivamente.
 
 ## a)
 
