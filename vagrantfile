@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
       # machine.vm.network "public_network"
 #, ip: "#{base_network}#{base_host + num}"
       machine.vm.hostname = "vm#{num+1}"
-      machine.vm.network "private_network", bridge: "#$default_network_interface", ip: "#{base_network}#{base_host + num + 1}"
+      machine.vm.network "private_network", bridge: "#$default_network_interface", ip: "#{base_network}.#{base_host + num + 1}"
       
       machine.vm.provider "virtualbox" do |vb|
         vb.memory = "512"
