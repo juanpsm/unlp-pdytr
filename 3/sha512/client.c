@@ -7,6 +7,16 @@
 #include <netdb.h>
 #include "checksum.h"
 #include <time.h>
+#include <sys/time.h>
+
+double dwalltime() {
+    struct timeval time;
+    if (gettimeofday(&time, NULL)) {
+        printf("Error obteniendo el tiempo\n");
+        exit(EXIT_FAILURE);
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
 
 void error(char *msg)
 {
@@ -20,7 +30,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
     struct hostent *server;
     clock_t start, end;
-    double cpu_time_used;
+    double cpu_time_used, wall_time_used, start_wall, end_wall;
     unsigned char checksum[SHA512_DIGEST_LENGTH]; 
     memset(checksum, 0, SHA512_DIGEST_LENGTH);
     
@@ -73,24 +83,27 @@ int main(int argc, char *argv[])
 
     // Agregado: TOMAR EL TIEMPO
     start = clock();
-
+    start_wall = dwalltime();
     //ENVIA UN MENSAJE AL SOCKET
     // printf("Sending %d bytes \n", buffer_size);
-    //sleep(10);
+    // sleep(10);
     if (write(sockfd,buffer, buffer_size) < 0) 
          error("ERROR writing to socket");
 
     bzero(buffer,buffer_size);
-	  // sleep(10);
+	  //sleep(10);
     //ESPERA RECIBIR UNA RESPUESTA
 	  nr = read(sockfd,buffer,18);
     if (nr < 0) 
          error("ERROR reading from socket");
     end = clock();
+    end_wall = dwalltime();
 
-    // Agregado: IMPRIMIR TIEMPO 
+    // Agregado: IMPRIMIR TIEMPO
+    wall_time_used = ((double) (end_wall - start_wall) / 2 );
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC / 2;
-    printf("%f\t",cpu_time_used);
+    // printf("%f\t",cpu_time_used);
+    printf("%f\t",wall_time_used);
    
 
     //Agregado: CERRAR SOCKET Y LIBERAR BUFFER
