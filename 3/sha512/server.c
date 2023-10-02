@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 			  
 	// SETEA LA CANTIDAD QUE PUEDEN ESPERAR MIENTRAS SE MANEJA UNA CONEXION		  
      listen(sockfd,5);
-	 
+	 sleep(10); 
 	// SE BLOQUEA A ESPERAR UNA CONEXION
      clilen = sizeof(cli_addr);
      newsockfd = accept(sockfd, 

@@ -74,19 +74,21 @@ int main(int argc, char *argv[])
      serv_addr.sin_port = htons(portno);
 	
 	//DESCRIPTOR - DIRECCION - TAMAÑO DIRECCION
-    do {sleep(10); } while (connect(sockfd,&serv_addr,sizeof(serv_addr)) < 0); 
+    do {sleep(1); } while (connect(sockfd,&serv_addr,sizeof(serv_addr)) < 0); 
 //error("ERROR connecting");
     bzero(buffer,buffer_size);
 
     // Agregado: LLENAR EL BUFFER CON PATRON REPETITVO 
     memset(buffer,'A',buffer_size);
 
+
+    //sleep(10);
     // Agregado: TOMAR EL TIEMPO
     start = clock();
     start_wall = dwalltime();
     //ENVIA UN MENSAJE AL SOCKET
     // printf("Sending %d bytes \n", buffer_size);
-    // sleep(10);
+
     if (write(sockfd,buffer, buffer_size) < 0) 
          error("ERROR writing to socket");
 
