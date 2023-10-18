@@ -8,6 +8,7 @@ public class App
     Server server = ServerBuilder.forPort(8080)
             .addService(new GreetingServiceImpl())
             .build();
+    Thread.sleep(10000); // sleep for 10 seconds
     server.start();
     System.out.println("Server started");
     server.awaitTermination();

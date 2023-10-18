@@ -16,10 +16,12 @@ public class Client
                     .setName("Ray")
                     .build();
 
-    GreetingServiceOuterClass.HelloResponse response =
+    // GreetingServiceOuterClass.HelloResponse response =
             stub.greeting(request);
-
-    System.out.println(response);
+    // implement deadline in client
+     GreetingServiceOuterClass.HelloResponse response = blockingStub.withDeadlineAfter(5, TimeUnit.SECONDS).greeting(request);
+    
+       System.out.println(response);
 
     channel.shutdownNow();
   }

@@ -2,10 +2,7 @@
 
 ## Primer paso:
 ´´´bash
-mkdir app
-
 podman build -t grpc .
-
 ´´´
 
 ## Segundo paso
