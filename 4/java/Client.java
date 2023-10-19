@@ -16,8 +16,7 @@ public class Client
                     .setName("Ray")
                     .build();
 
-    // GreetingServiceOuterClass.HelloResponse response =
-            stub.greeting(request);
+    // GreetingServiceOuterClass.HelloResponse response = stub.greeting(request);
     // implement deadline in client
      GreetingServiceOuterClass.HelloResponse response = blockingStub.withDeadlineAfter(5, TimeUnit.SECONDS).greeting(request);
     
