@@ -24,7 +24,7 @@ public class Client
           .setName("Ray")
           .build();
 
-      // Finally, make the call using the stub
+      // Finally, make the call using the stub with DEADLINE
       GreetingServiceOuterClass.HelloResponse response = null;
       response = stub.withDeadlineAfter(5000, TimeUnit.MILLISECONDS).greeting(request);
 

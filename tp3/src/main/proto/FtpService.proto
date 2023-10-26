@@ -1,16 +1,28 @@
 syntax = "proto3";
 package pdytr.four;
 
-message FileRequest {
+message ReadRequest {
     string name = 1;
+    int32 pos = 2;
+    int32 readBytes = 3;
 }
 
-message FileResponse {
-    string name = 1;
-    bytes content = 2;
+message ReadResponse {
+    bytes content = 1;
+    int32 length = 2;
 }
 
-service FTPService {
-    rpc Upload(FileResponse) returns (FileRequest);
-    rpc Download(FileRequest) returns (FileResponse);
+message WriteRequest {
+    string name = 1;
+    int32 writeBytes = 2;
+    bytes buffer = 3;
+}
+
+message WriteResponse {
+    int32 length = 1;
+}
+
+service FtpService {
+    rpc read(ReadRequest) returns (ReadResponse);
+    rpc write(WriteRequest) returns (WriteResponse);
 }

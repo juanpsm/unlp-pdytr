@@ -12,6 +12,7 @@ public class GreetingServiceImpl extends GreetingServiceGrpc.GreetingServiceImpl
 
     try {
       
+      // Delay
       TimeUnit.MILLISECONDS.sleep(5000);
 
       // HelloRequest has toString auto-generated.
