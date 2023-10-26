@@ -1,4 +1,4 @@
-package pdytr.one.c;
+package pdytr.one.a;
 import io.grpc.*;
 
 public class App

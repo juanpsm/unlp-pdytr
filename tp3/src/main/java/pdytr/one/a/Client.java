@@ -1,9 +1,8 @@
-package pdytr.one.c;
+package pdytr.one.a;
 
 import io.grpc.*;
 import pdytr.example.grpc.GreetingServiceGrpc;
 import pdytr.example.grpc.GreetingServiceOuterClass;
-import java.util.concurrent.TimeUnit;
 
 public class Client
 {
@@ -25,10 +24,10 @@ public class Client
           .build();
 
       // Finally, make the call using the stub
-      GreetingServiceOuterClass.HelloResponse response = null;
-      response = stub.withDeadlineAfter(5000, TimeUnit.MILLISECONDS).greeting(request);
+      GreetingServiceOuterClass.HelloResponse response = 
+        stub.greeting(request);
 
-      if (response != null) System.out.println(response);
+      System.out.println(response);
 
       // A Channel should be shutdown before stopping the process.
       channel.shutdownNow();

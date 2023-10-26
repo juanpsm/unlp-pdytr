@@ -1,4 +1,4 @@
-package pdytr.one.b;
+package pdytr.one.c;
 
 import io.grpc.stub.StreamObserver;
 import pdytr.example.grpc.GreetingServiceGrpc;
