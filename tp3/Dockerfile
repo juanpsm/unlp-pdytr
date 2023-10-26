@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.14 as base
 
 ENV MAVEN_VERSION 3.8.8
 
@@ -24,4 +24,4 @@ COPY GreetingService.proto src/main/proto/GreetingService.proto
 
 RUN mvn -DskipTests -e -X package
 
-COPY java/* src/main/java/pdytr/example/grpc/
+COPY src src

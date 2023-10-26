@@ -1,0 +1,16 @@
+syntax = "proto3";
+package pdytr.four;
+
+message FileRequest {
+    string name = 1;
+}
+
+message FileResponse {
+    string name = 1;
+    bytes content = 2;
+}
+
+service FTPService {
+    rpc Upload(FileResponse) returns (FileRequest);
+    rpc Download(FileRequest) returns (FileResponse);
+}
