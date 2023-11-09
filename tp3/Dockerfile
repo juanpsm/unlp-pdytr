@@ -20,8 +20,6 @@ RUN mvn archetype:generate \
 WORKDIR /grpc-hello-server
 
 COPY pom.xml pom.xml
-COPY GreetingService.proto src/main/proto/GreetingService.proto
+COPY src src
 
 RUN mvn -DskipTests -e -X package
-
-COPY src src
