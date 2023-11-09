@@ -1,0 +1,72 @@
+Migrating agent to Container-0@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-1@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-2@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-3@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-4@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-5@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-6@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-7@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-8@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Container-9@<Unknown Host>
+Hi agent with local name: monitoringAgent
+and full name: monitoringAgent@172.19.0.1:1099/JADE
+Migratin agent to Main-Container@<Unknown Host>
+Finished! Total time: 188ms
+Container Container-0 information:
+	Free memory: 32Mb
+	Processing time: 0ms
+	Processing load: 0.0%
+Container Container-1 information:
+	Free memory: 31Mb
+	Processing time: 0ms
+	Processing load: 0.5454545454545454%
+Container Container-2 information:
+	Free memory: 31Mb
+	Processing time: 1ms
+	Processing load: 0.375%
+Container Container-3 information:
+	Free memory: 30Mb
+	Processing time: 1ms
+	Processing load: 0.45454545454545453%
+Container Container-4 information:
+	Free memory: 30Mb
+	Processing time: 0ms
+	Processing load: 0.4%
+Container Container-5 information:
+	Free memory: 30Mb
+	Processing time: 0ms
+	Processing load: 0.4444444444444444%
+Container Container-6 information:
+	Free memory: 29Mb
+	Processing time: 1ms
+	Processing load: 0.5%
+Container Container-7 information:
+	Free memory: 29Mb
+	Processing time: 1ms
+	Processing load: 0.36363636363636365%
+Container Container-8 information:
+	Free memory: 28Mb
+	Processing time: 0ms
+	Processing load: 0.4%
+Container Container-9 information:
+	Free memory: 28Mb
+	Processing time: 0ms
+	Processing load: 0.375
