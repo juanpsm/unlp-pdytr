@@ -13,7 +13,8 @@ public class MultipleContainers {
 
     public static void main(String[] args) {
         try {
-            String IP = InetAddress.getLocalHost().getHostAddress();
+            String IP = "localhost";
+             // InetAddress.getLocalHost().getHostAddress();
             Runtime runtime = Runtime.instance();
             Profile mainProfile = new ProfileImpl();
             mainProfile.setParameter(Profile.CONTAINER_NAME, "Main-Container");
@@ -26,22 +27,18 @@ public class MultipleContainers {
             Profile additionalProfile;
             AgentContainer additionalContainer;
 
-            for (int i = 2; i <= 3; i++) {
+            for (int i = 1; i <= 3; i++) {
                 additionalProfile = new ProfileImpl();
                 additionalProfile.setParameter(Profile.CONTAINER_NAME, "Container-" + i);
                 additionalProfile.setParameter(Profile.MAIN_HOST, IP);
                 additionalProfile.setParameter(Profile.MAIN_PORT, "1099");
                 additionalContainer = runtime.createAgentContainer(additionalProfile);
             }
-            String filePath = "./sum.txt"; 
-            if (args.length > 0) {
-                filePath = args[0];
-            }
-
-            AgentController agente = mainContainer.createNewAgent("AgenteMovil", "myexamples.AgenteMovil", new Object[]{filePath});
-            agente.start();
-        } catch (StaleProxyException e) {
-            e.printStackTrace(); 
+            
+//            AgentController agente = mainContainer.createNewAgent("AgenteMovil", "myexamples.AgenteMovil", args);
+  //          agente.start();
+//       } catch (StaleProxyException e) {
+ //           e.printStackTrace(); 
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,1 +1,1 @@
-java -cp ../lib/jade.jar:classes MultipleContainers ./sum.txt
+java -cp ../lib/jade.jar:classes myexamples.MultipleContainers

@@ -8,20 +8,17 @@ import java.util.*;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class AgenteMovil extends Agent {
-    private ArrayList<Integer> numbers = new ArrayList<>();
-    private String[] containerNames = {"Main-Container", "Container-2", "Container-3"}; 
+public class AgenteMovilOld extends Agent {
+    private List<Integer> containerSums = new ArrayList<>();
+    private String[] containerNames = {"Main-Container", "Container-1", "Container-2", "Container-3"}; 
     private String filePath; 
     private int currentContainerIndex = 0 ;
-    private String IP = "172.17.0.1";
+    private String IP = "localhost";
     
     public void setup() {
         Object[] args = getArguments();
         if (args != null && args.length > 0 && args[0] != null) {
-            filePath = (String) args[0];
-        } else {
-           System.out.println("Arguments arrived empty");
-           filePath = "./sum.txt";
+            filePath = args[0].toString();
         }
         if (here().getName().equals("Main-Container")) {
           currentContainerIndex++;
@@ -30,51 +27,54 @@ public class AgenteMovil extends Agent {
     }
 
     private void moveToNextContainer() {
-        try {
-            //IP = InetAddress.getLocalHost().getHostAddress(); 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (currentContainerIndex < containerNames.length) {
-            String containerName = containerNames[currentContainerIndex++];
-            ContainerID destination = new ContainerID();
-            destination.setName(containerName);
-            destination.setAddress(IP);
-            destination.setPort("1099");
-            System.out.println("Migrando el agente a " + destination.getID());
-            doMove(destination);
-        } else {
-            int sum = sumNumbers();
-            System.out.println("La suma total es: " + sum);
-        }
+          String containerName = containerNames[currentContainerIndex % containerNames.length];
+          currentContainerIndex++;
+          ContainerID destination = new ContainerID();
+          destination.setName(containerName);
+          destination.setAddress(IP);
+          destination.setPort("1099");
+          System.out.println("Migrando el agente a " + destination.getID());
+          doMove(destination);
     }
     protected void afterMove() {
         Location currentLocation = here();
         System.out.println("Agente migrado a " + currentLocation.getID());
 
-        readFileAndStoreNumbers(filePath);
+        if (!currentLocation.getName().equals("Main-Container")) {
+            int containerSum = readFileAndStoreNumbers(filePath);
+            containerSums.add(containerSum);
+            System.out.println("Suma en " + currentLocation.getName() + ": " + containerSum);
+        }
 
-        moveToNextContainer();
+        if (currentContainerIndex <= containerNames.length) {
+            moveToNextContainer();
+        } else if (currentLocation.getName().equals("Main-Container")) {
+            int totalSum = sumNumbers();
+            System.out.println("Suma total en todos los contenedores: " + totalSum);
+            doDelete();
+        }
     }
-
-    private void readFileAndStoreNumbers(String fileName) {
-        try {
+    private int readFileAndStoreNumbers(String fileName) {
+       try {
             Path path = Paths.get(fileName);
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            for (String line : lines) {
-                try {
-                    int number = Integer.parseInt(line.trim());
-                    numbers.add(number);
-                } catch (NumberFormatException e) {
-                    System.out.println("No se pudo parsear el número: " + line);
-                }
-            }
+            return lines.stream()
+                        .mapToInt(line -> {
+                            try {
+                                return Integer.parseInt(line.trim());
+                            } catch (NumberFormatException e) {
+                                System.out.println("No se pudo parsear el número: " + line);
+                                return 0;
+                            }
+                        })
+                        .sum();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error leyendo el archivo: " + e.getMessage());
+            return 0;
         }
     }
 
     private int sumNumbers() {
-        return numbers.stream().mapToInt(Integer::intValue).sum();
+        return containerSums.stream().mapToInt(Integer::intValue).sum();
     }
 }

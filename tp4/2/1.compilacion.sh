@@ -1,1 +1,1 @@
-javac -classpath ../lib/jade.jar -d classes myexamples/AgenteMovil.java myexamples/MultipleContainers.java
+javac -classpath ../lib/jade.jar -d classes myexamples/AgenteMovil.java myexamples/MultipleContainers.java -Xdiags:verbose
