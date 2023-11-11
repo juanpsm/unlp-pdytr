@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$(podman ps | grep grpc)" ]; then
-  ./start
+  ./start.sh
 fi
 
 opt=$1
