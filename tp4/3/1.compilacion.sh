@@ -1,1 +1,1 @@
-javac -classpath ../lib/jade.jar -d classes myexamples/ClienteAgente.java  myexamples/FTPAgent.java 
+javac -classpath ../lib/jade.jar -d classes FTPAgent.java FTPUtils.java
