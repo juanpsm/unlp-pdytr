@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z "$(podman ps | grep grpc)" ]; then
-  ./start
+  echo "Start server: ./start.sh" 
 fi
 
 opt=$1

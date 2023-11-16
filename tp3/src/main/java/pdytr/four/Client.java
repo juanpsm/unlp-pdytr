@@ -26,7 +26,7 @@ public class Client
     {
 
       if (args.length != 1) {
-        System.err.println("usage: Client <filename>");
+        System.err.println("usage: runclient.sh four <filename>");
         System.exit(1);
       }
       
@@ -43,32 +43,30 @@ public class Client
         // create the stub
         FtpServiceBlockingStub stub = newBlockingStub(channel);
 
-        // create a read request of a maximum size of 1MB
-        // (there's no need to read the whole file)
+        // create a read request to read file
         ReadRequest readRequest = ReadRequest.newBuilder()
             .setName(file.getName())
             .setPos(0)
-            .setReadBytes((int)file.length() < 1024 ? (int)file.length() : 1024)
+            .setReadBytes((int)file.length())
             .build();
 
         // make the call to read using the stub (expect a response from the server)
         ReadResponse readResponse = stub.read(readRequest);
 
-        /*
-          * now that the readRequest holds some data, make the server write it
-          * (as every client tries to write to the same file, this should boom boom most of the time)
-        */
+        // write file just readen
 
         int pos = 0;
         int totalBytes = readResponse.getContent().size();
         int chunkSize = 2;
 
-        while (pos < readResponse.getContent().size()) {
+        // System.out.println("SIZE: " + totalBytes);
+        while (pos < totalBytes) {
             int endPos = Math.min(pos + chunkSize, totalBytes); 
             // create the write request
+            // System.out.println("POS: " + pos + " END: " + endPos);
             WriteRequest writeRequest = WriteRequest.newBuilder()
-                .setName("file.txt")
-                .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(endPos, pos).toByteArray()))
+                .setName("output")
+                .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(pos, endPos).toByteArray()))
                 .setWriteBytes(endPos - pos)
                 .build();
 
@@ -76,7 +74,7 @@ public class Client
             WriteResponse writeResponse = stub.write(writeRequest);
 
             // update the pos
-            pos += (endPos - pos);
+            pos += chunkSize;
         }
 
       } catch (Exception e) {
