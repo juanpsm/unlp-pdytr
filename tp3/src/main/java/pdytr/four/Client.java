@@ -60,19 +60,23 @@ public class Client
         */
 
         int pos = 0;
+        int totalBytes = readResponse.getContent().size();
+        int chunkSize = 2;
+
         while (pos < readResponse.getContent().size()) {
+            int endPos = Math.min(pos + chunkSize, totalBytes); 
             // create the write request
             WriteRequest writeRequest = WriteRequest.newBuilder()
                 .setName("file.txt")
-                .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(pos, pos + 2).toByteArray()))
-                .setWriteBytes(2)
+                .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(endPos, pos).toByteArray()))
+                .setWriteBytes(endPos - pos)
                 .build();
 
             // make the call to write using the stub (expect a response from the server)
             WriteResponse writeResponse = stub.write(writeRequest);
 
             // update the pos
-            pos += 2;
+            pos += (endPos - pos);
         }
 
       } catch (Exception e) {
