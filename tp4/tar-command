@@ -1,0 +1,1 @@
+tar -czf tp4-entrega-Sanchez-Tidball.tar.gz -X .gitignore --exclude lib/jade.jar 1/ 2/ 3/ lib Informe.pdf
