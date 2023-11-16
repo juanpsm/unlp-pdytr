@@ -1,3 +1,8 @@
 */classes/*
 */APDescription.txt
 */MTPs-Main-Container.txt
+
+# needed for tar --exclude-vcs-ignores
+**/classes/
+**/APDescription.txt
+**/MTPs-Main-Container.txt
