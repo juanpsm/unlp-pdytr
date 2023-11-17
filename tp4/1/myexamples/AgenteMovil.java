@@ -13,12 +13,14 @@ import java.util.Iterator;
 import jade.util.leap.Serializable;
 
 public class AgenteMovil extends Agent {
-    private String[] containerNames;
+    private String[] containerNames = new String[10];
     private ArrayList<ContainerInfo> containerInfos = new ArrayList<>();
-    {
+
+    public AgenteMovil () { 
       containerNames[0] = "Main-Container";
-      for (int i = 0; i < 10; i++) {
-        containerNames[i] = "Container-" + (i - 1);
+      for (int i = 1; i < 10; i++) {
+        containerNames[i] = "Container-" + (i);
+        System.out.println(containerNames[i]);
       }
     }
     private String filePath; 
@@ -74,8 +76,8 @@ public class AgenteMovil extends Agent {
         if (currentContainerIndex <= containerNames.length) {
             moveToNextContainer();
         } else if (currentLocation.getName().equals("Main-Container")) {
-           calculateTotalTime();
            for (ContainerInfo container : containerInfos) System.out.println(container.getInfoAsString());
+           calculateTotalTime();
            doDelete();
         }
     }

@@ -1,1 +1,1 @@
-java -cp ../lib/jade.jar:classes jade.Boot -gui -container -host localhost -agents mol:MonitoringAgent
+java -cp ../lib/jade.jar:classes jade.Boot -container -host localhost -port 1099 -agents "AgenteMovil:myexamples.AgenteMovil()"
