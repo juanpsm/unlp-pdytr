@@ -91,7 +91,7 @@ private void handleReadWrite(Location current) {
             doMove(new ContainerID(remoteLocation.getName(), null));
     } else {
         String newLocalPath = localPath + ".cpy";
-        buffer = FTPUtils.readFile(remotePath, 0, totalBytes); // Read from the beginning of remote file
+        buffer = FTPUtils.readFile(remotePath, 0, totalBytes); 
         int writtenBytes = FTPUtils.writeFile(newLocalPath, buffer);
         transferredBytes += writtenBytes;
         System.out.printf("Written %d bytes to local copy\n", writtenBytes);
