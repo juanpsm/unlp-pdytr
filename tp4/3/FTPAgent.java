@@ -77,23 +77,35 @@ public class FTPAgent extends Agent {
         }
     }
 
-
 private void handleReadWrite(Location current) {
     if (!current.getName().equals(currentLocation.getName())) {
-        buffer = FTPUtils.readFile(remotePath, transferredBytes, totalBytes);
-        transferredBytes += buffer.length;
-        System.out.printf("Read %d bytes from remote\n", buffer.length);
-        doMove(new ContainerID(currentLocation.getName(), null));
-    } else {
-        FTPUtils.writeFile(localPath, buffer);
-        System.out.printf("Written %d bytes to local\n", buffer.length);
         if (transferredBytes < totalBytes) {
-            doMove(new ContainerID("Main-Container", null));
-        } else {
-            System.out.println("Read-write operation completed successfully.");
+            FTPUtils.writeFile(remotePath, buffer);
+            System.out.printf("Written %d bytes to remote\n", buffer.length);
+            buffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
+            transferredBytes += buffer.length;
+            doMove(new ContainerID(currentLocation.getName(), null));
+        } 
+        else {
+            buffer = FTPUtils.readFile(remotePath, transferredBytes - (int)totalBytes, totalBytes);
+            transferredBytes += buffer.length;
+            doMove(new ContainerID(currentLocation.getName(), null));
+        }
+    } else {
+        if (transferredBytes < 2 * totalBytes) {
+            String newLocalPath = "copy-of-" + localPath; 
+            FTPUtils.writeFile(newLocalPath, buffer);
+            System.out.printf("Written %d bytes to local copy\n", buffer.length);
+            if (transferredBytes < totalBytes) {
+                doMove(new ContainerID("Main-Container", null));
+            } else {
+                System.out.println("Read-write operation completed successfully.");
+            }
         }
     }
 }
+
+
 
 private void handleWrite(Location current) {
     if (!current.getName().equals(currentLocation.getName())) {
