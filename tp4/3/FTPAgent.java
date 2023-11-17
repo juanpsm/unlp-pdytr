@@ -82,33 +82,38 @@ private void processArguments(Object[] args) {
         }
     }
 
-private void handleReadWrite(Location current) {
-    if (current.equals(originLocation)) {
-        if (transferredBytes < totalBytes) {
-            buffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
-            transferredBytes += buffer.length;
-            System.out.printf("Read %d bytes from origin\n", buffer.length);
-            doMove(new ContainerID(remoteLocation.getName(), null));
-    } else {
-        String newLocalPath = localPath + ".cpy";
-        buffer = FTPUtils.readFile(remotePath, 0, totalBytes); 
-        int writtenBytes = FTPUtils.writeFile(newLocalPath, buffer);
-        transferredBytes += writtenBytes;
-        System.out.printf("Written %d bytes to local copy\n", writtenBytes);
-        if (transferredBytes < 2 * totalBytes) {
-            doMove(new ContainerID(remoteLocation.getName(), null));
-        } else {
-            System.out.println("Read-write operation completed successfully.");
-            doDelete();
-        }
-    }
-        } else if (current.equals(remoteLocation)) {
-        FTPUtils.writeFile(remotePath, buffer);
-        System.out.printf("Written %d bytes to remote\n", buffer.length);
-        doMove(new ContainerID(originLocation.getName(), null));
-    }
-}
 
+  private void handleReadWrite(Location current) {
+      if (current.equals(originLocation)) {
+          if (transferredBytes < totalBytes) {
+              System.out.println("Reading from origin!");
+              originBuffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
+              transferredBytes += originBuffer.length;
+              System.out.printf("Read %d bytes from origin\n", originBuffer.length);
+              doMove(new ContainerID(remoteLocation.getName(), null));
+          } else {
+              System.out.println("Writing copy!");
+              String newLocalPath = localPath + ".cpy";
+              int writtenBytes = FTPUtils.writeFile(newLocalPath, originBuffer);
+              System.out.printf("Written %d bytes to local copy\n", writtenBytes);
+              if (transferredBytes >= totalBytes) {
+                  System.out.println("Read-write operation completed successfully.");
+                  doDelete();
+              }
+        }
+      } else if (current.equals(remoteLocation)) {
+          System.out.print("Writing in remote!");
+          if (Files.notExists(Paths.get(remotePath))) {
+              int writtenBytes = FTPUtils.writeFile(remotePath, remoteBuffer);
+              System.out.printf("Written %d bytes to remote\n", writtenBytes);
+              System.out.println("Reading remote file!");
+              remoteBuffer = FTPUtils.readFile(remotePath, transferredRemoteBytes, totalRemoteBytes);
+              transferredRemoteBytes += remoteBuffer.length;
+              System.out.printf("Read %d bytes from remote\n", remoteBuffer.length);
+              doMove(new ContainerID(originLocation.getName(), null));
+        }
+      }
+  }
 
 private void handleWrite(Location current) {
     if (!current.getName().equals(currentLocation.getName())) {
