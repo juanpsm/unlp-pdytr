@@ -15,7 +15,11 @@ public class FTPAgent extends Agent {
     private byte[] buffer;
     private long totalBytes;
     private int transferredBytes = 0;
-
+    private long totalRemoteBytes;
+    private int transferredRemoteBytes = 0;
+    private byte[] originBuffer;
+    private byte[] remoteBuffer;
+    
     public void setup() {
         Object[] args = getArguments();
         processArguments(args);
@@ -46,7 +50,9 @@ private void processArguments(Object[] args) {
                 break;
             case "readwrite":
                 totalBytes = Files.size(Paths.get(localPath));
-                buffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
+                totalRemoteBytes = totalBytes;
+                originBuffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
+                remoteBuffer = originBuffer;
                 break;
             default:
                 System.out.println("Invalid operation: " + operation);
@@ -60,9 +66,10 @@ private void processArguments(Object[] args) {
 
     private void initiateMigration() {
         try {
-            remoteLocation = new ContainerID("Main-Container", null);
-            System.out.println("Migrating agent to " + remoteLocation.getID());
-            doMove(remoteLocation);
+            originLocation = new ContainerID("Main-Container", null);
+            remoteLocation = new ContainerID("Container-1", null);
+            System.out.println("Migrating agent to " + originLocation.getID());
+            doMove(originLocation);
         } catch (Exception e) {
             System.out.println("Migration failed: " + e.getMessage());
             doDelete();
@@ -72,7 +79,7 @@ private void processArguments(Object[] args) {
     protected void afterMove() {
         Location current = here();
 
-        System.out.println("originLocation: " +originLocation);
+        System.out.println("I am at: " + current);
         if ("readwrite".equals(operation)) {
             handleReadWrite(current);
         } else if ("write".equals(operation)) {
@@ -114,6 +121,38 @@ private void processArguments(Object[] args) {
         }
       }
   }
+
+private void handleReadWrite(Location current) {
+    if (current.equals(originLocation)) {
+        if (transferredBytes < totalBytes) {
+            System.out.println("Reading from origin!");
+            originBuffer = FTPUtils.readFile(localPath, transferredBytes, totalBytes);
+            transferredBytes += originBuffer.length;
+            System.out.printf("Read %d bytes from origin\n", originBuffer.length);
+            doMove(new ContainerID(remoteLocation.getName(), null));
+        } else {
+            System.out.println("Writing copy!");
+            String newLocalPath = localPath + ".cpy";
+            int writtenBytes = FTPUtils.writeFile(newLocalPath, originBuffer);
+            System.out.printf("Written %d bytes to local copy\n", writtenBytes);
+            if (transferredBytes >= totalBytes) {
+                System.out.println("Read-write operation completed successfully.");
+                doDelete();
+            }
+       }
+    } else if (current.equals(remoteLocation)) {
+         System.out.print("Writing in remote!");
+         if (Files.notExists(Paths.get(remotePath))) {
+            int writtenBytes = FTPUtils.writeFile(remotePath, remoteBuffer);
+            System.out.printf("Written %d bytes to remote\n", writtenBytes);
+            System.out.println("Reading remote file!");
+            remoteBuffer = FTPUtils.readFile(remotePath, transferredRemoteBytes, totalRemoteBytes);
+            transferredRemoteBytes += remoteBuffer.length;
+            System.out.printf("Read %d bytes from remote\n", remoteBuffer.length);
+            doMove(new ContainerID(originLocation.getName(), null));
+       }
+    }
+}
 
 private void handleWrite(Location current) {
     if (!current.getName().equals(currentLocation.getName())) {
