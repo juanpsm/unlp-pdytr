@@ -1,18 +1,11 @@
 package pdytr.four;
 
 import java.io.File;
-
 import com.google.protobuf.ByteString;
-import pdytr.four.FtpServiceGrpc.FtpServiceBlockingStub;
-import static pdytr.four.FtpServiceGrpc.newBlockingStub;
+import pdytr.four.FtpServiceGrpc;
+import pdytr.four.FtpServiceOuterClass;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-
-import pdytr.four.FtpServiceOuterClass.ReadRequest;
-import pdytr.four.FtpServiceOuterClass.ReadResponse;
-import pdytr.four.FtpServiceOuterClass.WriteRequest;
-import pdytr.four.FtpServiceOuterClass.WriteResponse;
-
 public class Client
 {
     private static final String database = "src" + File.separator
@@ -26,7 +19,7 @@ public class Client
     {
 
       if (args.length != 1) {
-        System.err.println("usage: runclient.sh four <filename>");
+        System.err.println("use: ./runclient.sh four <file>");
         System.exit(1);
       }
       
@@ -37,43 +30,59 @@ public class Client
         .build();
 
       try {
-        // create file to read
+        // Create a file to read from args
         File file = new File(Client.database, args[0]);
 
-        // create the stub
-        FtpServiceBlockingStub stub = newBlockingStub(channel);
-
-        // create a read request to read file
-        ReadRequest readRequest = ReadRequest.newBuilder()
-            .setName(file.getName())
-            .setPos(0)
-            .setReadBytes((int)file.length())
-            .build();
-
-        // make the call to read using the stub (expect a response from the server)
-        ReadResponse readResponse = stub.read(readRequest);
-
-        // write file just readen
+        // It is up to the client to determine whether to block the call
+        // Here we create a blocking stub, but an async stub,
+        // or an async stub with Future are always possible.
+        FtpServiceGrpc.FtpServiceBlockingStub stub = FtpServiceGrpc.newBlockingStub(channel);
 
         int pos = 0;
-        int totalBytes = readResponse.getContent().size();
+        int totalBytes = (int)file.length();
         int chunkSize = 2;
+        while (pos < totalBytes) {
+            // Check if endPos is not out of bound
+            int endPos = Math.min(pos + chunkSize, totalBytes); 
+            // Create a ReadRequest to read the file
+            FtpServiceOuterClass.ReadRequest readRequest =
+              FtpServiceOuterClass.ReadRequest.newBuilder()
+                .setName(file.getName())
+                .setPos(pos)
+                .setReadBytes(endPos - pos)
+                .build();
+
+            // Finally, make the call using the stub
+            FtpServiceOuterClass.ReadResponse readResponse = null;
+            readResponse =  stub.read(readRequest);
+            if (readResponse != null) System.out.println(readResponse);
+
+            // Move the position to the next chunk
+            pos += chunkSize;
+        }
+
+        // To test the writing of the file, we will write the
+        // same file just read.
+
+        pos = 0;
+        totalBytes = readResponse.getContent().size();
+        chunkSize = 2;
 
         // System.out.println("SIZE: " + totalBytes);
         while (pos < totalBytes) {
-            int endPos = Math.min(pos + chunkSize, totalBytes); 
-            // create the write request
-            // System.out.println("POS: " + pos + " END: " + endPos);
+            // Check if endPos is not out of bound
+            endPos = Math.min(pos + chunkSize, totalBytes); 
+            // Create the write request
             WriteRequest writeRequest = WriteRequest.newBuilder()
                 .setName("output")
                 .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(pos, endPos).toByteArray()))
                 .setWriteBytes(endPos - pos)
                 .build();
 
-            // make the call to write using the stub (expect a response from the server)
+            // Finally, make the call using the stub
             WriteResponse writeResponse = stub.write(writeRequest);
 
-            // update the pos
+            // Move the position to the next chunk
             pos += chunkSize;
         }
 
