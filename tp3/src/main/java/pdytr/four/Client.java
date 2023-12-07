@@ -41,6 +41,8 @@ public class Client
         int pos = 0;
         int totalBytes = (int)file.length();
         int chunkSize = 2;
+        FtpServiceOuterClass.ReadResponse readResponse = null;
+
         while (pos < totalBytes) {
             // Check if endPos is not out of bound
             int endPos = Math.min(pos + chunkSize, totalBytes); 
@@ -71,7 +73,7 @@ public class Client
         // System.out.println("SIZE: " + totalBytes);
         while (pos < totalBytes) {
             // Check if endPos is not out of bound
-            endPos = Math.min(pos + chunkSize, totalBytes); 
+            int endPos = Math.min(pos + chunkSize, totalBytes); 
             // Create the write request
             WriteRequest writeRequest = WriteRequest.newBuilder()
                 .setName("output")
