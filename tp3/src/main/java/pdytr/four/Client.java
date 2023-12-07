@@ -55,7 +55,6 @@ public class Client
                 .build();
 
             // Finally, make the call using the stub
-            FtpServiceOuterClass.ReadResponse readResponse = null;
             readResponse =  stub.read(readRequest);
             if (readResponse != null) System.out.println(readResponse);
 
@@ -75,14 +74,18 @@ public class Client
             // Check if endPos is not out of bound
             int endPos = Math.min(pos + chunkSize, totalBytes); 
             // Create the write request
-            WriteRequest writeRequest = WriteRequest.newBuilder()
+            FtpServiceOuterClass.WriteRequest writeRequest =
+              FtpServiceOuterClass.WriteRequest.newBuilder()
                 .setName("output")
-                .setBuffer(ByteString.copyFrom(readResponse.getContent().substring(pos, endPos).toByteArray()))
+                .setBuffer(ByteString.copyFrom(readResponse.getContent()
+                                                .substring(pos, endPos)
+                                                .toByteArray()))
                 .setWriteBytes(endPos - pos)
                 .build();
 
             // Finally, make the call using the stub
-            WriteResponse writeResponse = stub.write(writeRequest);
+            FtpServiceOuterClass.WriteResponse writeResponse =
+              stub.write(writeRequest);
 
             // Move the position to the next chunk
             pos += chunkSize;
