@@ -1,6 +1,8 @@
 */classes/*
 */APDescription.txt
 */MTPs-Main-Container.txt
+3/files/dst/*
+!3/files/dst/.gitkeep
 
 # needed for tar --exclude-vcs-ignores
 **/classes/

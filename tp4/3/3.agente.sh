@@ -9,6 +9,4 @@ op=$1
 local_path=$2
 remote_path=$3
 
-
 java -cp ../lib/jade.jar:classes jade.Boot -gui -container  -host localhost -agents "mol:FTPAgent($op,$local_path,$remote_path)"
-
