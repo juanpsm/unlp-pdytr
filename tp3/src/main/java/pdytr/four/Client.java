@@ -4,8 +4,8 @@ import java.io.File;
 import com.google.protobuf.ByteString;
 import pdytr.four.FtpServiceGrpc;
 import pdytr.four.FtpServiceOuterClass;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import io.grpc.*;
+
 public class Client
 {
     private static final String database = "src" + File.separator
@@ -41,11 +41,17 @@ public class Client
         int pos = 0;
         int totalBytes = (int)file.length();
         int chunkSize = 2;
+
+        byte[] data = new byte[totalBytes];
         FtpServiceOuterClass.ReadResponse readResponse = null;
 
+        System.out.println("SIZE: " + totalBytes);
         while (pos < totalBytes) {
             // Check if endPos is not out of bound
-            int endPos = Math.min(pos + chunkSize, totalBytes); 
+            System.out.println("POS: " + pos);
+            int endPos = Math.min(pos + chunkSize, totalBytes);
+            System.out.println("END: " + endPos);
+            System.out.println("setReadBytes: " + (endPos - pos));
             // Create a ReadRequest to read the file
             FtpServiceOuterClass.ReadRequest readRequest =
               FtpServiceOuterClass.ReadRequest.newBuilder()
@@ -57,16 +63,27 @@ public class Client
             // Finally, make the call using the stub
             readResponse =  stub.read(readRequest);
             if (readResponse != null) System.out.println(readResponse);
+            
+            // readResponse.getContent().copyTo(data);
 
+            ByteString.ByteIterator it = readResponse.getContent().iterator();
+            for (int i = 0; i < readResponse.getContent().size(); ++i) {
+              byte value = it.nextByte();
+              data[pos+i] = value;
+              System.out.println("data[" + (pos+i) + "]: " + value);
+            }
+            // System.out.println("data: " + java.util.Arrays.toString(data));
             // Move the position to the next chunk
             pos += chunkSize;
         }
+
+        // System.out.println("data: " + java.util.Arrays.toString(data));
+
 
         // To test the writing of the file, we will write the
         // same file just read.
 
         pos = 0;
-        totalBytes = readResponse.getContent().size();
         chunkSize = 2;
 
         // System.out.println("SIZE: " + totalBytes);
@@ -77,16 +94,14 @@ public class Client
             FtpServiceOuterClass.WriteRequest writeRequest =
               FtpServiceOuterClass.WriteRequest.newBuilder()
                 .setName("output")
-                .setBuffer(ByteString.copyFrom(readResponse.getContent()
-                                                .substring(pos, endPos)
-                                                .toByteArray()))
+                .setBuffer(ByteString.copyFrom(data, pos, chunkSize))
                 .setWriteBytes(endPos - pos)
                 .build();
 
             // Finally, make the call using the stub
             FtpServiceOuterClass.WriteResponse writeResponse =
               stub.write(writeRequest);
-
+            if (writeResponse != null) System.out.println(writeResponse);
             // Move the position to the next chunk
             pos += chunkSize;
         }

@@ -11,6 +11,7 @@ import pdytr.four.FtpServiceGrpc.FtpServiceImplBase;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Arrays;
 import java.io.File;
 
 public class FtpServiceImpl extends FtpServiceImplBase {
@@ -27,29 +28,40 @@ public class FtpServiceImpl extends FtpServiceImplBase {
     try {
       File file = new File(this.database, request.getName());
 
-      // if file exists
+      // Check if file exists
       if (file.exists() && file.isFile()) {
 
-        // create stream
+        // Create stream
         FileInputStream stream = new FileInputStream(file);
 
         // create data array
-        byte[] data = new byte[((request.getReadBytes() > 0) && (file.length() - request.getPos() >= request.getReadBytes()))
-                ? request.getReadBytes()
-                : (int)(file.length() - request.getPos())];
+        byte[] data = new byte[(int)(request.getReadBytes())];
 
-        // read file into array
-        stream.read(data, request.getPos(), data.length);
+        // int rc = stream.read(data);
+        // while(rc != -1)
+        // {
+        //   // rc should contain the number of bytes read in this operation.
+        //   // do stuff...
 
-        // load data into a response
-        responseObserver.onNext(ReadResponse.newBuilder().setContent(ByteString.copyFrom(data)).setLength(data.length).build());
+        //   // next read
+        //   rc = stream.read(data); 
+        // }
 
-        // close stream
+        System.out.println("request.getPos(): " + request.getPos());
+        System.out.println("request.getReadBytes(): " + request.getReadBytes());
+
+        // Read file into array
+        stream.skip(request.getPos());
+        stream.read(data);
+        System.out.println("data: " + Arrays.toString(data));
+        // Load data into a response
+        responseObserver.onNext(ReadResponse.newBuilder().setContent(ByteString.copyFrom(data)).setLength(request.getReadBytes()).build());
+
+        // Close stream
         stream.close();
 
       } else {
-          // if file doesn't exist
-          // load an empty response
+          // If file doesn't exist load an empty response
           responseObserver.onNext(ReadResponse.newBuilder().setContent(null).setLength(0).build());
       }
 
